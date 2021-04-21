@@ -10,7 +10,7 @@
 <body>
 
 	<h1>New Product</h1>
-	<form:form action="/" method="post" modelAttribute="product">
+	<form:form action="/product" method="post" modelAttribute="product">
 	    <p>
 	        <form:label path="name">Product Name</form:label>
 	        <form:errors path="name"/>

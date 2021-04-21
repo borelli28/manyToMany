@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.armando.manyToMany.models.Category;
 import com.armando.manyToMany.models.Product;
@@ -45,10 +46,14 @@ public class MainController {
     
     @RequestMapping(value="/product", method=RequestMethod.POST)
     public String createProduct(@Valid @ModelAttribute("product") Product product, BindingResult result) {
+    	System.out.println("Inside createProduct()");
     	if (result.hasErrors()) {
+    	  System.out.println("Erros encountered in creating product");
           return "/Product/new.jsp";
     	} else {
           productService.createProduct(product);
+          System.out.println(product + " Created succesfully!");
+          // get new product id to redirect to that product show page
           return "redirect:/product";
     	}
     }
@@ -57,7 +62,12 @@ public class MainController {
     public String showProduct(@PathVariable("id") Long id, Model model) {
 	  Product product = productService.findProduct(id);
 	  model.addAttribute("product", product);
-	  return "/Dojo/show.jsp";
+	  
+	  // get all product categories
+	  List<Category> productCats = product.getCategories();
+	  model.addAttribute("productCats", productCats);
+	  
+	  return "/Product/show.jsp";
     }
   
     // CATEGORY ROUTES
@@ -89,11 +99,25 @@ public class MainController {
 	public String showCat(@PathVariable("id") Long id, Model model) {
 		  Category cat = catService.findCategory(id);
 		  model.addAttribute("cat", cat);
+		  
+		  // get all products
+		  List<Product> products = productService.allProducts();
+		  model.addAttribute("products", products);
+		  
+		  // get all products that are from this category
+		  List<Product> myCatProducts = cat.getProducts();
+		  model.addAttribute("myCatproducts", myCatProducts);
+		  
 		  return "/Category/show.jsp";
 	}
 	
 	// CONNECT PRODUCT TO CATEGORY
 	
-//	@RequestMapping(value="/cat/")
+	@RequestMapping(value="/product/addCat", method=RequestMethod.POST)
+	public String addCat(
+			@RequestParam(value="product_id") Long product_id, 
+			@RequestParam(value="category_id") Long category_id) {
+		return "redirect:/products";
+	}
 
 }
