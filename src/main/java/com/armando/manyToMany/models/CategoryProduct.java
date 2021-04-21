@@ -36,6 +36,12 @@ public class CategoryProduct {
     
     public CategoryProduct() {
     }
+    
+	public CategoryProduct(Category category, Product product) {
+		this.category = category;
+		this.product = product;
+	}
+
 
 	// getters and setters
 	public Long getId() {

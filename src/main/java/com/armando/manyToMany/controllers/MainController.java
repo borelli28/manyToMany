@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.armando.manyToMany.models.Category;
+import com.armando.manyToMany.models.CategoryProduct;
 import com.armando.manyToMany.models.Product;
 import com.armando.manyToMany.services.CategoryService;
 import com.armando.manyToMany.services.ProductService;
@@ -63,6 +64,10 @@ public class MainController {
 	  Product product = productService.findProduct(id);
 	  model.addAttribute("product", product);
 	  
+	  // get all categories for the add category form
+	  List<Category> cats = catService.allCategories();
+	  model.addAttribute("cats", cats);
+	  
 	  // get all product categories
 	  List<Category> productCats = product.getCategories();
 	  model.addAttribute("productCats", productCats);
@@ -97,6 +102,7 @@ public class MainController {
 	
 	@RequestMapping("/cat/{id}")
 	public String showCat(@PathVariable("id") Long id, Model model) {
+		  // get category instance by using id, and save it to model
 		  Category cat = catService.findCategory(id);
 		  model.addAttribute("cat", cat);
 		  
@@ -106,7 +112,7 @@ public class MainController {
 		  
 		  // get all products that are from this category
 		  List<Product> myCatProducts = cat.getProducts();
-		  model.addAttribute("myCatproducts", myCatProducts);
+		  model.addAttribute("myCatProducts", myCatProducts);
 		  
 		  return "/Category/show.jsp";
 	}
@@ -117,7 +123,35 @@ public class MainController {
 	public String addCat(
 			@RequestParam(value="product_id") Long product_id, 
 			@RequestParam(value="category_id") Long category_id) {
+		
+		// 
+		Category iCategory = catService.findCategory(category_id);
+		Product iProduct = productService.findProduct(product_id);
+		
+		CategoryProduct catProd = new CategoryProduct(iCategory, iProduct);
+		
+		productService.saveRel(catProd);
+		
 		return "redirect:/products";
+	}
+	
+	
+	// CONNECT CATEGORY TO PRODUCT
+	
+	@RequestMapping(value="/cat/addProduct", method=RequestMethod.POST)
+	public String addProduct(
+			@RequestParam(value="product_id") Long product_id, 
+			@RequestParam(value="category_id") Long category_id) {
+		
+		// 
+		Category iCategory = catService.findCategory(category_id);
+		Product iProduct = productService.findProduct(product_id);
+		
+		CategoryProduct catProd = new CategoryProduct(iCategory, iProduct);
+		
+		catService.saveRel(catProd);
+		
+		return "redirect:/cat";
 	}
 
 }

@@ -5,16 +5,20 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.armando.manyToMany.models.CategoryProduct;
 import com.armando.manyToMany.models.Product;
+import com.armando.manyToMany.repositories.CatProdRepo;
 import com.armando.manyToMany.repositories.ProductRepo;
 
 @Service
 public class ProductService {
 	
 	private final ProductRepo productRepo;
+	private final CatProdRepo catProdRepo;
 	
-	public ProductService(ProductRepo productRepo) {
+	public ProductService(ProductRepo productRepo, CatProdRepo catProdRepo) {
 		this.productRepo = productRepo;
+		this.catProdRepo = catProdRepo;
 	}
 	
 	// return all products
@@ -40,6 +44,13 @@ public class ProductService {
 	// delete product
 	public void deleteProduct(Long id) {
 		productRepo.deleteById(id);
+	}
+	
+	
+	// CREATE RELATIONSHIP BETWEEN CATEGORY AND PRODUCT
+	
+	public CategoryProduct saveRel(CategoryProduct catProd) {
+		return catProdRepo.save(catProd);	
 	}
 	
 }
