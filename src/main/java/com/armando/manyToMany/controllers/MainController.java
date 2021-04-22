@@ -72,6 +72,16 @@ public class MainController {
 	  List<Category> productCats = product.getCategories();
 	  model.addAttribute("productCats", productCats);
 	  
+	  // This for loop pops categories out of the cats arrayList if these categories are already assign to our product
+	  // This way User can't add duplicates categories to our product
+	  
+	  for (int i=0; i<productCats.size(); i++) {
+		  if (cats.contains(productCats.get(i))) {
+			  int catIdx = cats.indexOf(productCats.get(i));
+			  cats.remove(catIdx);
+		  }
+	  }
+	  
 	  return "/Product/show.jsp";
     }
   
@@ -113,6 +123,16 @@ public class MainController {
 		  // get all products that are from this category
 		  List<Product> myCatProducts = cat.getProducts();
 		  model.addAttribute("myCatProducts", myCatProducts);
+		  
+		  // Iterate trough our current category products, 
+		  // if a product exist in all products list, then that element is deleted from allProducts(products)
+		  // This way user can only add a product to the category if is not there already
+		  for (int i=0; i<myCatProducts.size(); i++) {
+			  if (products.contains(myCatProducts.get(i))) {
+				  int productIdx = products.indexOf(myCatProducts.get(i));
+				  products.remove(productIdx);
+			  }
+		  }
 		  
 		  return "/Category/show.jsp";
 	}
